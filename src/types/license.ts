@@ -1,3 +1,14 @@
+export type LicensePlan =
+  | "3_months"
+  | "6_months"
+  | "1_year"
+  | "lifetime";
+
+export type LicenseStatus =
+  | "unused"
+  | "active"
+  | "suspended";
+
 export interface License {
   id: string;
 
@@ -7,17 +18,17 @@ export interface License {
 
   email: string;
 
-  plan: "Lifetime" | "1 Year" | "6 Months" | "3 Months";
+  plan: LicensePlan;
 
   issueDate: string;
 
-  expiry: string;
+  expiry: string | null;
 
-  device: string;
+  device: string | null;
 
-  status: "Unused" | "Active" | "Expired";
+  status: LicenseStatus;
 
-  lastCheck: string;
+  lastCheck: string | null;
 
   notes: string;
 }

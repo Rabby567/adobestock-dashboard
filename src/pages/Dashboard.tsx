@@ -39,7 +39,7 @@ const [licenses, setLicenses] = useState<License[]>([]);
 const loadLicenses = async () => {
   try {
     const data = await getLicenses();
-    setLicenses(data.licenses ?? data);
+    setLicenses(data);
   } catch (err) {
     console.error(err);
   }
@@ -54,11 +54,13 @@ useEffect(() => {
 }, []);
 
 
+
 const [deleteId, setDeleteId] = useState<string | null>(null);
 
 const [openModal, setOpenModal] = useState(false);
 
 const [customer, setCustomer] = useState("");
+const [notes, setNotes] = useState("");
 
 const [viewLicense, setViewLicense] = useState<License | null>(null);
 
@@ -67,18 +69,29 @@ const [email, setEmail] = useState("");
 const [search, setSearch] = useState("");
 
 const [plan, setPlan] = useState<
-  "Lifetime" | "1 Year" | "6 Months" | "3 Months"
->("Lifetime");
+  "lifetime" | "1_year" | "6_months" | "3_months"
+>("lifetime");
 
 const totalLicenses = licenses.length;
 
-const activeLicenses = licenses.filter(
-  (l) => l.status === "Active"
+const unusedLicenses = licenses.filter(
+  (item) => item.status === "unused"
 ).length;
 
-const expiredLicenses = licenses.filter(
-  (l) => l.status === "Expired"
+const suspendedLicenses = licenses.filter(
+  (item) => item.status === "suspended"
 ).length;
+
+
+const activeLicenses = licenses.filter(
+  (l) => l.status === "active"
+).length;
+
+const expiredLicenses = licenses.filter((l) => {
+  if (!l.expiry) return false;
+
+  return new Date(l.expiry) < new Date();
+}).length;
 
 const customerCount = new Set(
   licenses.map((l) => (l.email || "").toLowerCase())
@@ -95,36 +108,57 @@ const handleSaveLicense = async () => {
   try {
     const licenseKey = generateLicenseKey();
 
-    const result = await createLicense({
-      id: licenseKey,
-      licenseKey,
-      customer,
-      email,
-      plan,
-      issueDate: new Date().toISOString().slice(0, 10),
-      expiry: calculateExpiry(plan),
-      device: "-",
-      status: "Unused",
-      lastCheck: "",
-      notes: "",
-    });
+    await createLicense({
+  id: licenseKey,
+  licenseKey,
+  customer,
+  email,
+  plan,
+  issueDate: new Date().toISOString().slice(0, 10),
+  expiry: calculateExpiry(plan),
+  device: null,
+  status: "unused",
+  lastCheck: null,
+  notes,
+});
 
-    if (result.success) {
-      await loadLicenses();
+await loadLicenses();
 
-      setCustomer("");
-      setEmail("");
-      setPlan("Lifetime");
-      setOpenModal(false);
-    } else {
-      alert(result.message);
-    }
-  } catch (err) {
-    console.error(err);
-    alert("Create License Failed");
-  }
+setCustomer("");
+setEmail("");
+setPlan("lifetime");
+setNotes("");
+setOpenModal(false);
+   
+  } catch (error) {
+  console.error(error);
+  alert(JSON.stringify(error, null, 2));
+}
 };
 
+
+const handleStatusChange = async (
+    id: string,
+    status: License["status"]
+) => {
+
+    try {
+
+        await updateLicense(id, {
+            status,
+        });
+
+        await loadLicenses();
+
+    } catch (err) {
+
+        console.error(err);
+
+        alert("Status Update Failed");
+
+    }
+
+};
 
   return (
     <div className="min-h-screen bg-slate-100 flex">
@@ -141,7 +175,7 @@ const handleSaveLicense = async () => {
           <div className="w-full max-w-[1550px] mx-auto">
 
             {/* Stats */}
-            <div className="grid grid-cols-4 gap-6">
+            <div className="grid grid-cols-6 gap-6">
 
               <StatCard
                 title="Total Licenses"
@@ -163,6 +197,20 @@ const handleSaveLicense = async () => {
                 color="#f59e0b"
                 icon={<XCircleIcon className="w-7 h-7" />}
               />
+
+              <StatCard
+  title="Unused"
+  value={unusedLicenses}
+  color="#eab308"
+  icon={<KeyIcon className="w-7 h-7" />}
+/>
+
+<StatCard
+  title="Suspended"
+  value={suspendedLicenses}
+  color="#dc2626"
+  icon={<XCircleIcon className="w-7 h-7" />}
+/>
 
               <StatCard
                 title="Customers"
@@ -216,6 +264,7 @@ const handleSaveLicense = async () => {
   search={search}
   onEdit={setEditLicense}
   onView={setViewLicense}
+  onStatusChange={handleStatusChange}
 />
             <Modal
   open={openModal}
@@ -250,10 +299,10 @@ const handleSaveLicense = async () => {
     onChange={(e) =>
       setPlan(
         e.target.value as
-          | "Lifetime"
-          | "1 Year"
-          | "6 Months"
-          | "3 Months"
+          | "lifetime"
+          | "1_year"
+          | "6_months"
+          | "3_months"
       )
     }
     className="
@@ -269,13 +318,43 @@ const handleSaveLicense = async () => {
       focus:ring-blue-100
     "
   >
-    <option>Lifetime</option>
-    <option>1 Year</option>
-    <option>6 Months</option>
-    <option>3 Months</option>
+    <option value="lifetime">Lifetime</option>
+<option value="1_year">1 Year</option>
+<option value="6_months">6 Months</option>
+<option value="3_months">3 Months</option>
   </select>
 
 </div>
+
+
+<div>
+
+<label className="block mb-2 text-sm font-semibold">
+Notes
+</label>
+
+<textarea
+  rows={4}
+  value={notes}
+  onChange={(e) => setNotes(e.target.value)}
+  placeholder="Write notes..."
+  className="
+    w-full
+    rounded-xl
+    border
+    border-slate-300
+    px-4
+    py-3
+    resize-none
+    outline-none
+    focus:border-blue-500
+    focus:ring-4
+    focus:ring-blue-100
+  "
+/>
+
+</div>
+
 
 
 </div>
@@ -395,6 +474,11 @@ const handleSaveLicense = async () => {
         value={viewLicense.device}
       />
 
+      <Info
+    title="Notes"
+    value={viewLicense.notes}
+/>
+
     </div>
 
   )}
@@ -452,13 +536,44 @@ const handleSaveLicense = async () => {
           }
           className="w-full h-11 rounded-xl border border-slate-300 px-4"
         >
-          <option>Lifetime</option>
-          <option>1 Year</option>
-          <option>6 Months</option>
-          <option>3 Months</option>
+          <option value="lifetime">Lifetime</option>
+<option value="1_year">1 Year</option>
+<option value="6_months">6 Months</option>
+<option value="3_months">3 Months</option>
         </select>
 
       </div>
+
+      <div>
+  <label className="block mb-2 text-sm font-semibold">
+    Notes
+  </label>
+
+  <textarea
+    rows={4}
+    value={editLicense.notes ?? ""}
+    onChange={(e) =>
+      setEditLicense({
+        ...editLicense,
+        notes: e.target.value,
+      })
+    }
+    placeholder="Write notes..."
+    className="
+      w-full
+      rounded-xl
+      border
+      border-slate-300
+      px-4
+      py-3
+      resize-none
+      outline-none
+      focus:border-blue-500
+      focus:ring-4
+      focus:ring-blue-100
+    "
+  />
+</div>
 
       <div className="flex justify-end gap-3">
 
@@ -476,27 +591,20 @@ const handleSaveLicense = async () => {
 
   try {
 
-    const result = await updateLicense(
-      editLicense.id,
-      {
-        customer: editLicense.customer,
-        email: editLicense.email,
-        plan: editLicense.plan,
-        expiry: calculateExpiry(editLicense.plan),
-      }
-    );
+  await updateLicense(
+  editLicense.id,
+  {
+    customer: editLicense.customer,
+    email: editLicense.email,
+    plan: editLicense.plan,
+    expiry: calculateExpiry(editLicense.plan),
+    notes: editLicense.notes,
+  }
+);
 
-    if (result.success) {
+await loadLicenses();
 
-      await loadLicenses();
-
-      setEditLicense(null);
-
-    } else {
-
-      alert(result.message);
-
-    }
+setEditLicense(null);
 
   } catch (err) {
 
@@ -539,7 +647,7 @@ function Info({
   value,
 }: {
   title: string;
-  value: string;
+  value: string | null;
 }) {
   return (
 
@@ -550,9 +658,8 @@ function Info({
       </div>
 
       <div className="font-semibold mt-2 break-all">
-        {value}
-      </div>
-
+  {value ?? "-"}
+</div>
     </div>
 
   );

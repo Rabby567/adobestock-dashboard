@@ -19,39 +19,65 @@ export function generateLicenseKey() {
 
 }
 
-export function calculateExpiry(
-  plan: string
-) {
-
-  if (plan === "Lifetime")
-    return "Never";
+export function calculateExpiry(plan: string): string | null {
+  if (plan === "lifetime") {
+    return null;
+  }
 
   const date = new Date();
 
   switch (plan) {
-
-    case "1 Year":
-      date.setFullYear(
-        date.getFullYear() + 1
-      );
+    case "1_year":
+      date.setFullYear(date.getFullYear() + 1);
       break;
 
-    case "6 Months":
-      date.setMonth(
-        date.getMonth() + 6
-      );
+    case "6_months":
+      date.setMonth(date.getMonth() + 6);
       break;
 
-    case "3 Months":
-      date.setMonth(
-        date.getMonth() + 3
-      );
+    case "3_months":
+      date.setMonth(date.getMonth() + 3);
       break;
 
+    default:
+      return null;
   }
 
-  return date
-    .toISOString()
-    .split("T")[0];
+  return date.toISOString().split("T")[0];
+}
 
+
+export function formatPlan(plan: string) {
+  switch (plan) {
+    case "lifetime":
+      return "Lifetime";
+
+    case "1_year":
+      return "1 Year";
+
+    case "6_months":
+      return "6 Months";
+
+    case "3_months":
+      return "3 Months";
+
+    default:
+      return plan;
+  }
+}
+
+export function formatStatus(status: string) {
+  switch (status) {
+    case "unused":
+      return "Unused";
+
+    case "active":
+      return "Active";
+
+    case "suspended":
+      return "Suspended";
+
+    default:
+      return status;
+  }
 }
