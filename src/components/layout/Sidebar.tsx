@@ -2,76 +2,120 @@ import {
   HomeIcon,
   KeyIcon,
   UsersIcon,
-  ChartBarIcon,
   Cog6ToothIcon,
-  ClipboardDocumentListIcon,
   ArrowLeftStartOnRectangleIcon,
+  ShoppingBagIcon,
+  TicketIcon,
+  CubeIcon,
 } from "@heroicons/react/24/outline";
 
+import type { ReactNode } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { logout } from "../../services/authService";
+
 export default function Sidebar() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleLogout = async () => {
+    const ok = window.confirm("Are you sure you want to logout?");
+
+    if (!ok) return;
+
+    await logout();
+
+    navigate("/login", { replace: true });
+  };
+
+  const menuItems = [
+    {
+      title: "Dashboard",
+      icon: <HomeIcon className="h-5 w-5" />,
+      path: "/dashboard",
+    },
+    {
+      title: "Licenses",
+      icon: <KeyIcon className="h-5 w-5" />,
+      path: "/licenses",
+    },
+    {
+      title: "Customers",
+      icon: <UsersIcon className="h-5 w-5" />,
+      path: "/customers",
+    },
+    {
+      title: "Orders",
+      icon: <ShoppingBagIcon className="h-5 w-5" />,
+      path: "/orders",
+    },
+    {
+      title: "Promo Codes",
+      icon: <TicketIcon className="h-5 w-5" />,
+      path: "/promo-codes",
+    },
+    {
+      title: "Plans",
+      icon: <CubeIcon className="h-5 w-5" />,
+      path: "/plans",
+    },
+    {
+      title: "Settings",
+      icon: <Cog6ToothIcon className="h-5 w-5" />,
+      path: "/settings",
+    },
+  ];
+
   return (
-    <aside className="w-72 bg-slate-950 text-white flex flex-col">
+    <aside className="flex w-72 flex-col bg-slate-950 text-white">
 
       {/* Logo */}
-
-      <div className="px-8 pt-10 pb-8 border-b border-slate-800">
-
+      <div className="border-b border-slate-800 px-8 pt-10 pb-8">
         <h1 className="text-3xl font-bold">
           Adobe Stock
         </h1>
 
-        <p className="text-slate-400 mt-2">
+        <p className="mt-2 text-slate-400">
           License Manager
         </p>
-
       </div>
 
       {/* Menu */}
-
-      <nav className="flex-1 px-5 py-8 space-y-2">
-
-        <MenuItem
-          active
-          icon={<HomeIcon className="w-5 h-5" />}
-          title="Dashboard"
-        />
-
-        <MenuItem
-          icon={<KeyIcon className="w-5 h-5" />}
-          title="Licenses"
-        />
-
-        <MenuItem
-          icon={<UsersIcon className="w-5 h-5" />}
-          title="Customers"
-        />
-
-        <MenuItem
-          icon={<ChartBarIcon className="w-5 h-5" />}
-          title="Analytics"
-        />
-
-        <MenuItem
-          icon={<ClipboardDocumentListIcon className="w-5 h-5" />}
-          title="Activity"
-        />
-
-        <MenuItem
-          icon={<Cog6ToothIcon className="w-5 h-5" />}
-          title="Settings"
-        />
-
+      <nav className="flex-1 space-y-2 px-5 py-8">
+        {menuItems.map((item) => (
+          <MenuItem
+            key={item.path}
+            icon={item.icon}
+            title={item.title}
+            active={location.pathname === item.path}
+            onClick={() => navigate(item.path)}
+          />
+        ))}
       </nav>
 
-      {/* Bottom */}
+      {/* Logout */}
+      <div className="border-t border-slate-800 p-5">
+        <button
+          onClick={handleLogout}
+          className="
+            flex
+            w-full
+            items-center
+            gap-3
+            rounded-xl
+            px-4
+            py-3
+            text-red-400
+            transition
+            hover:bg-red-600
+            hover:text-white
+          "
+        >
+          <ArrowLeftStartOnRectangleIcon className="h-5 w-5" />
 
-      <div className="p-5 border-t border-slate-800">
-
-        <MenuItem
-          icon={<ArrowLeftStartOnRectangleIcon className="w-5 h-5" />}
-          title="Logout"
-        />
-
+          <span className="font-medium">
+            Logout
+          </span>
+        </button>
       </div>
 
     </aside>
@@ -79,26 +123,30 @@ export default function Sidebar() {
 }
 
 type MenuProps = {
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
   active?: boolean;
+  onClick?: () => void;
 };
 
 function MenuItem({
   icon,
   title,
-  active,
+  active = false,
+  onClick,
 }: MenuProps) {
   return (
     <button
+      onClick={onClick}
       className={`
-        w-full
         flex
+        w-full
         items-center
         gap-3
+        rounded-xl
         px-4
         py-3
-        rounded-xl
+        font-medium
         transition-all
         duration-200
 
@@ -111,7 +159,7 @@ function MenuItem({
     >
       {icon}
 
-      <span className="font-medium">
+      <span>
         {title}
       </span>
     </button>

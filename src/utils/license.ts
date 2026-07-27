@@ -81,3 +81,36 @@ export function formatStatus(status: string) {
       return status;
   }
 }
+
+/* ========================================================= */
+/* MAP PLAN NAME */
+/* ========================================================= */
+
+import type { LicensePlan } from "../types/license";
+
+export function mapPlanName(
+  name: string
+): LicensePlan {
+
+  switch (name) {
+
+    case "Lifetime":
+      return "lifetime";
+
+    case "1 Year":
+      return "1_year";
+
+    case "6 Months":
+      return "6_months";
+
+    case "3 Months":
+      return "3_months";
+
+    default:
+      throw new Error(
+        `Unknown plan: ${name}`
+      );
+
+  }
+
+}

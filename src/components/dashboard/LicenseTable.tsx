@@ -36,8 +36,8 @@ export default function LicenseTable({
 const filteredLicenses = licenses.filter((item) => {
 
     const searchMatch =
-        (item.licenseKey || "").toLowerCase().includes(keyword) ||
-        (item.customer || "").toLowerCase().includes(keyword) ||
+        (item.license_key || "").toLowerCase().includes(keyword) ||
+        (item.customer_name || "").toLowerCase().includes(keyword) ||
         (item.email || "").toLowerCase().includes(keyword) ||
         (item.plan || "").toLowerCase().includes(keyword);
 
@@ -100,11 +100,11 @@ const filteredLicenses = licenses.filter((item) => {
                 className="border-t border-slate-100 hover:bg-slate-50 transition"
               >
                 <td className="px-4 py-4 whitespace-nowrap font-mono font-semibold text-sm">
-                  {item.licenseKey}
+                  {item.license_key}
                 </td>
 
                 <td className="px-4 py-4 whitespace-nowrap">
-                  {item.customer}
+                  {item.customer_name}
                 </td>
 
                 <td className="px-4 py-4 whitespace-nowrap overflow-hidden text-ellipsis">
@@ -116,11 +116,11 @@ const filteredLicenses = licenses.filter((item) => {
                 </td>
 
                 <td className="px-4 py-4 whitespace-nowrap">
-                  {item.issueDate}
+                  {item.issue_date}
                 </td>
 
                 <td className="px-4 py-4 whitespace-nowrap">
-                  {item.expiry}
+                  {item.expiry_date ?? "Lifetime"}
                 </td>
 
                 <td className="px-4 py-4">
@@ -154,9 +154,9 @@ Suspended
                 <td
   
   className="px-6 py-4 font-mono text-xs max-w-[220px] truncate"
-  title={item.device ?? undefined}
+  title={item.device_id ?? undefined}
 >
-  {item.device ?? "-"}
+  {item.device_id ?? "-"}
 </td>
 
                 <td className="px-6 py-4">
