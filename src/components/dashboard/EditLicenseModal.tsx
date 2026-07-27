@@ -34,11 +34,11 @@ export default function EditLicenseModal({
 
           <Input
             label="Customer Name"
-            value={license.customer}
+            value={license.customer_name}
             onChange={(e) =>
               setLicense({
                 ...license,
-                customer: e.target.value,
+                customer_name: e.target.value,
               })
             }
           />

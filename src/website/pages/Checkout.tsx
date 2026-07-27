@@ -299,8 +299,7 @@ if (!paymentMethod) {
 
  try {
 
-  const result =
-    await checkout({
+   await checkout({
 
       customer_name:
         customerName,
