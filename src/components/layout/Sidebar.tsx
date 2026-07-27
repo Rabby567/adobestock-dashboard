@@ -36,32 +36,32 @@ export default function Sidebar() {
     {
       title: "Licenses",
       icon: <KeyIcon className="h-5 w-5" />,
-      path: "/licenses",
+      path: "/dashboard/licenses"
     },
     {
       title: "Customers",
       icon: <UsersIcon className="h-5 w-5" />,
-      path: "/customers",
+      path: "/dashboard/customers"
     },
     {
       title: "Orders",
       icon: <ShoppingBagIcon className="h-5 w-5" />,
-      path: "/orders",
+      path: "/dashboard/orders"
     },
     {
       title: "Promo Codes",
       icon: <TicketIcon className="h-5 w-5" />,
-      path: "/promo-codes",
+      path: "/dashboard/promos"
     },
     {
       title: "Plans",
       icon: <CubeIcon className="h-5 w-5" />,
-      path: "/plans",
+      path: "/dashboard/plans"
     },
     {
       title: "Settings",
       icon: <Cog6ToothIcon className="h-5 w-5" />,
-      path: "/settings",
+      path: "/dashboard/settings"
     },
   ];
 

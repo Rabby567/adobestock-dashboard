@@ -1,52 +1,56 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import Home from "./website/pages/Home";
+import Checkout from "./website/pages/Checkout";
+import Success from "./website/pages/Success";
 
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import PromoCodes from "./pages/PromoCodes";
-import Orders from "./pages/Orders";
-import Plans from "./pages/Plans";
 import Licenses from "./pages/Licenses";
 import Customers from "./pages/Customers";
+import Orders from "./pages/Orders";
+import Plans from "./pages/Plans";
+import PromoCodes from "./pages/PromoCodes";
 import Settings from "./pages/Settings";
-import Checkout from "./website/pages/Checkout";
-import Success from "./website/pages/Success";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
   return (
     <Routes>
-      {/* Root */}
+
+      {/* ============================= */}
+      {/* WEBSITE */}
+      {/* ============================= */}
+
       <Route
         path="/"
-        element={<Navigate to="/login" replace />}
-      />
-
-      {/* Website */}
-      <Route
-        path="/website"
         element={<Home />}
       />
 
       <Route
-  path="/checkout"
-  element={<Checkout />}
-/>
+        path="/checkout"
+        element={<Checkout />}
+      />
 
-<Route
-  path="/success"
-  element={<Success />}
-/>
+      <Route
+        path="/success"
+        element={<Success />}
+      />
 
-      {/* Login */}
+      {/* ============================= */}
+      {/* AUTH */}
+      {/* ============================= */}
+
       <Route
         path="/login"
         element={<Login />}
       />
 
-      {/* Dashboard */}
+      {/* ============================= */}
+      {/* DASHBOARD */}
+      {/* ============================= */}
+
       <Route
         path="/dashboard"
         element={
@@ -56,52 +60,26 @@ export default function App() {
         }
       />
 
-      {/* Licenses */}
-
-<Route
-  path="/licenses"
-  element={
-    <ProtectedRoute>
-      <Licenses />
-    </ProtectedRoute>
-  }
-/>
-
-{/* Customers */}
-
-<Route
-  path="/customers"
-  element={
-    <ProtectedRoute>
-      <Customers />
-    </ProtectedRoute>
-  }
-/>
-
-{/* Settings */}
-
-<Route
-  path="/settings"
-  element={
-    <ProtectedRoute>
-      <Settings />
-    </ProtectedRoute>
-  }
-/>
-
-      {/* Promo Codes */}
       <Route
-        path="/promo-codes"
+        path="/dashboard/licenses"
         element={
           <ProtectedRoute>
-            <PromoCodes />
+            <Licenses />
           </ProtectedRoute>
         }
       />
 
-      {/* Orders */}
       <Route
-        path="/orders"
+        path="/dashboard/customers"
+        element={
+          <ProtectedRoute>
+            <Customers />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/dashboard/orders"
         element={
           <ProtectedRoute>
             <Orders />
@@ -109,9 +87,8 @@ export default function App() {
         }
       />
 
-      {/* Plans */}
       <Route
-        path="/plans"
+        path="/dashboard/plans"
         element={
           <ProtectedRoute>
             <Plans />
@@ -119,11 +96,33 @@ export default function App() {
         }
       />
 
+      <Route
+        path="/dashboard/promos"
+        element={
+          <ProtectedRoute>
+            <PromoCodes />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/dashboard/settings"
+        element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* ============================= */}
       {/* 404 */}
+      {/* ============================= */}
+
       <Route
         path="*"
-        element={<Navigate to="/login" replace />}
+        element={<Navigate to="/" replace />}
       />
+
     </Routes>
   );
 }
