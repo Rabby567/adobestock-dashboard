@@ -2,7 +2,46 @@ import { ShieldCheckIcon } from "@heroicons/react/24/solid";
 import { ArrowPathIcon } from "@heroicons/react/24/solid";
 import { BoltIcon } from "@heroicons/react/24/solid";
 import { CpuChipIcon } from "@heroicons/react/24/solid";
+
+import { useEffect, useState } from "react";
+
+import {
+  getLatestDownload,
+  type LatestDownload,
+} from "../../services/downloadService";
+
 export default function Hero() {
+
+  const [download, setDownload] =
+  useState<LatestDownload | null>(null);
+
+const [loading, setLoading] =
+  useState(true);
+
+useEffect(() => {
+  async function load() {
+    try {
+      const result =
+        await getLatestDownload();
+
+      setDownload(result);
+
+    } catch (error) {
+
+      console.error(error);
+
+    } finally {
+
+      setLoading(false);
+
+    }
+  }
+
+  load();
+
+}, []);
+
+
   return (
     <section
       id="home"
@@ -139,6 +178,15 @@ export default function Hero() {
             submissions and accelerate your workflow.
           </p>
 
+          {download && (
+  <p className="mt-5 text-sm text-slate-500">
+    Current Version:
+    <span className="ml-2 font-semibold text-blue-600">
+      {download.version}
+    </span>
+  </p>
+)}
+
         </div>
 
 
@@ -147,23 +195,34 @@ export default function Hero() {
 <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
 
   <button
-    className="
-      rounded-xl
-      bg-blue-600
-      px-8
-      py-4
-      text-base
-      font-semibold
-      text-white
-      shadow-lg
-      shadow-blue-200
-      transition
-      hover:-translate-y-1
-      hover:bg-blue-700
-    "
-  >
-    Download Latest Version
-  </button>
+  onClick={() => {
+    if (download) {
+      window.location.href =
+        download.downloadUrl;
+    }
+  }}
+  disabled={!download}
+  className="
+    rounded-xl
+    bg-blue-600
+    px-8
+    py-4
+    text-base
+    font-semibold
+    text-white
+    shadow-lg
+    shadow-blue-200
+    transition
+    hover:-translate-y-1
+    hover:bg-blue-700
+    disabled:cursor-not-allowed
+    disabled:opacity-60
+  "
+>
+  {loading
+    ? "Loading..."
+    : "Download Latest Version"}
+</button>
 
   <button
     className="

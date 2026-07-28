@@ -38,11 +38,19 @@ export interface CheckoutData {
 /* ========================================================= */
 
 export interface CheckoutResult {
-
   success: boolean;
-
   message: string;
 
+  customerName: string;
+  email: string;
+
+  plan: string;
+
+  licenseKey: string;
+
+  issueDate: string;
+
+  expiryDate: string | null;
 }
 
 /* ========================================================= */
@@ -254,51 +262,60 @@ const license =
 
   });
 
+/* ========================================================= */
+/* SEND LICENSE EMAIL (NON-BLOCKING) */
+/* ========================================================= */
 
-  // ------------------------------------
-// Send License Email
-// ------------------------------------
+try {
 
-await sendLicenseEmail({
+  await sendLicenseEmail({
 
-  customerName:
+    customerName: customer.name,
 
-    customer.name,
+    email: customer.email,
 
-  email:
+    licenseKey: license.license_key,
 
-    customer.email,
+    plan: mapPlanName(plan.name),
 
-  licenseKey:
+    issueDate: license.issue_date,
 
-  license.license_key,
+    expiryDate: license.expiry_date,
 
-  plan:
+  });
 
-    mapPlanName(plan.name),
+} catch (error) {
 
-  issueDate:
+  // Email failure should NOT fail checkout.
+  // License is already created and saved.
 
-  license.issue_date,
+  console.error(
+    "License email failed:",
+    error
+  );
 
-  expiryDate:
-
-  license.expiry_date,
-
-});
+}
 
 
   // ------------------------------------
   // Success
   // ------------------------------------
 
-  return {
+ return {
+  success: true,
+  message: "Checkout completed.",
 
-    success: true,
+  customerName: customer.name,
 
-    message:
-      "Checkout completed.",
+  email: customer.email,
 
-  };
+  plan: mapPlanName(plan.name),
+
+  licenseKey: license.license_key,
+
+  issueDate: license.issue_date,
+
+  expiryDate: license.expiry_date,
+};
 
 }

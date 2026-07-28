@@ -299,25 +299,30 @@ if (!paymentMethod) {
 
  try {
 
-   await checkout({
+  const result =
+  await checkout({
 
-      customer_name:
-        customerName,
+    customer_name:
+      customerName,
 
-      email,
+    email,
 
-      plan_id:
-        plan.id,
+    plan_id:
+      plan.id,
 
-      promo_code:
-        promoCode || null,
+    promo_code:
+      promoCode || null,
 
-      payment_method:
-        paymentMethod,
+    payment_method:
+      paymentMethod,
 
-    });
+});
 
-  navigate("/success");
+navigate("/success", {
+
+  state: result,
+
+});
 
 } catch (error) {
 

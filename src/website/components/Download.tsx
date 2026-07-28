@@ -5,7 +5,58 @@ import {
   CircleStackIcon,
 } from "@heroicons/react/24/outline";
 
+import { useEffect, useState } from "react";
+
+import {
+
+  getLatestDownload,
+
+  type LatestDownload,
+
+} from "../../services/downloadService";
+
 export default function Download() {
+
+
+
+  const [download, setDownload] =
+
+  useState<LatestDownload | null>(null);
+
+const [loading, setLoading] =
+
+  useState(true);
+
+useEffect(() => {
+
+  async function load() {
+
+    try {
+
+      const result =
+
+        await getLatestDownload();
+
+      setDownload(result);
+
+    } catch (error) {
+
+      console.error(error);
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+  }
+
+  load();
+
+}, []);
+
+
+
   return (
     <section
       id="download"
@@ -35,27 +86,50 @@ export default function Download() {
               features.
             </p>
 
-            <button
-              className="
-                mt-12
-                inline-flex
-                items-center
-                gap-3
-                rounded-2xl
-                bg-blue-600
-                px-8
-                py-5
-                text-lg
-                font-semibold
-                text-white
-                transition
-                hover:bg-blue-700
-              "
-            >
-              <ArrowDownTrayIcon className="h-6 w-6" />
+           <button
 
-              Download Latest Version
-            </button>
+  onClick={() => {
+
+    if (download) {
+
+      window.location.href =
+
+        download.downloadUrl;
+
+    }
+
+  }}
+
+  className="
+  mt-12
+  inline-flex
+  items-center
+  gap-3
+  rounded-2xl
+  bg-blue-600
+  px-8
+  py-5
+  text-lg
+  font-semibold
+  text-white
+  transition
+  hover:bg-blue-700
+"
+>
+
+  <ArrowDownTrayIcon className="h-6 w-6" />
+
+  {
+
+    loading
+
+      ? "Loading..."
+
+      : "Download Latest Version"
+
+  }
+
+</button>
 
           </div>
 
@@ -98,7 +172,15 @@ export default function Download() {
                   </p>
 
                   <h3 className="text-xl font-bold text-white">
-                    v1.1.2
+                    {
+
+  loading
+
+    ? "Loading..."
+
+    : download?.version
+
+}
                   </h3>
 
                 </div>
@@ -116,12 +198,66 @@ export default function Download() {
                   </p>
 
                   <h3 className="text-xl font-bold text-white">
-                    22 July 2026
+                    {
+
+  loading || !download
+  ? "Loading..."
+  : new Date(download.releaseDate).toLocaleDateString(
+      "en-GB",
+      {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }
+    )
+
+}
                   </h3>
 
                 </div>
 
               </div>
+
+
+            <div className="flex items-center gap-4">
+
+  <CircleStackIcon className="h-8 w-8 text-cyan-400" />
+
+  <div>
+
+    <p className="text-slate-400">
+
+      File Size
+
+    </p>
+
+    <h3 className="text-xl font-bold text-white">
+
+      {
+
+        loading
+
+          ? "Loading..."
+
+          : `${(
+
+              download!.fileSize /
+
+              1024 /
+
+              1024
+
+            ).toFixed(1)} MB`
+
+      }
+
+    </h3>
+
+  </div>
+
+</div>
+             
+
 
               <div className="rounded-2xl bg-slate-900 p-6">
 
